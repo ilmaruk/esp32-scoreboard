@@ -1,6 +1,0 @@
-[device]
-board = "esp32-devkit-v1"
-
-[simulation]
-# Wokwi looks for main.cpp in /src automatically
-# It does NOT support unit testing or the test/ folder
