@@ -1,18 +1,48 @@
+#include <IRremote.hpp>
 #include "Timer.h"
+#include "IRProcessor.h"
+#include "commands.h"
 
 Timer* t = new Timer(65);
+String prevTime;
+
+IRProcessor::CommandMap wokwiRemoteCommandMap = {
+    {168, COMMAND_OPERATE_TIMER},
+    {224, COMMAND_HOME_SCORE},
+    {144, COMMAND_AWAY_SCORE},
+};
+IRProcessor* p = new IRProcessor(IrReceiver, wokwiRemoteCommandMap);
 
 void setup() {
-  // put your setup code here, to run once:
   Serial.begin(115200);
-  Serial.println("Hello, ESP32-S3!");
+  Serial.println("Welcome to ESP32 Scoreboard");
 
-  t->Start(millis());
+  IrReceiver.begin(0);
 }
 
 void loop() {
-  uint32_t remaining = t->Update(millis());
-  Serial.print("Remaining: ");
-  Serial.println(formatTime(remaining));
-  delay(10); // this speeds up the simulation
+  // Update the timer
+  String currTime = formatTime(t->Update(millis()));
+  if (currTime != prevTime) {
+    Serial.print("Remaining: ");
+    Serial.println(currTime);
+    prevTime = currTime;
+  }
+
+  // Process IR commands
+  int16_t cmd;
+  if ((cmd = p->Process()) != COMMAND_NONE) {
+    Serial.print("Command: ");
+    Serial.println(cmd);
+    switch (cmd) {
+      case COMMAND_OPERATE_TIMER:
+        if (t->IsRunning()) {
+          t->Stop(millis());
+        } else {
+          t->Start(millis());
+        }
+    }
+  }
+
+  delay(100);
 }

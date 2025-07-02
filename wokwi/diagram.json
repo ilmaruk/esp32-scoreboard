@@ -2,7 +2,17 @@
   "version": 1,
   "author": "Ruggero Ferretti",
   "editor": "wokwi",
-  "parts": [ { "type": "board-esp32-s3-devkitc-1", "id": "esp", "top": 0, "left": 0, "attrs": {} } ],
-  "connections": [ [ "esp:TX", "$serialMonitor:RX", "", [] ], [ "esp:RX", "$serialMonitor:TX", "", [] ] ],
+  "parts": [
+    { "type": "board-esp32-s3-devkitc-1", "id": "esp", "top": -0.18, "left": 4.57, "attrs": {} },
+    { "type": "wokwi-ir-receiver", "id": "ir1", "top": -126.15, "left": 17.42, "attrs": {} },
+    { "type": "wokwi-ir-remote", "id": "remote1", "top": -124.8, "left": 172.8, "attrs": {} }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "ir1:GND", "esp:GND.1", "black", [ "v19.2", "h-76.8", "v249.6" ] ],
+    [ "ir1:VCC", "esp:3V3.1", "red", [ "v28.8", "h-76.8", "v38.4" ] ],
+    [ "ir1:DAT", "esp:0", "green", [ "v19.2", "h57.6", "v172.8" ] ]
+  ],
   "dependencies": {}
 }

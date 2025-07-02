@@ -34,6 +34,11 @@ void Timer::Stop(uint32_t currentTimeMs)
     }
 }
 
+bool Timer::IsRunning() const
+{
+    return isRunning;
+}
+
 bool Timer::IsFinished() const
 {
     return totalElapsedMs >= durationMs;
