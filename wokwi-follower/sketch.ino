@@ -40,7 +40,7 @@ void reconnect_to_mqtt(PubSubClient* client) {
     if (client->connect(MQTT_CLIENT_NAME)) {
       Serial.println("connected");
       // Subscribe
-      client->subscribe(MQTT_TOPIC);
+      client->subscribe(MQTT_TOPIC, 1);
     } else {
       Serial.print("failed, rc=");
       Serial.print(client->state());
@@ -70,34 +70,14 @@ void update(Timer* t, Score *s) {
   }
 }
 
-void ensure_time() {
-  struct tm time_info;
-  if (getLocalTime(&time_info)) return;
-  while (!getLocalTime(&time_info)) {
-    Serial.println("Waiting for time...");
-  }
-  Serial.println("Time received!");
-}
-
 void handle_mqtt_message(char* topic, byte* message, unsigned int length) {
   Serial.print("Message arrived on topic: ");
-  Serial.print(topic);
-  Serial.print(". Message: ");
-  String messageTemp;
-  
-  for (int i = 0; i < length; i++) {
-    Serial.print((char)message[i]);
-    messageTemp += (char)message[i];
-  }
-  Serial.println();
+  Serial.println(topic);
 
-  // Actual handling
   JsonDocument doc;
   deserializeJson(doc, message);
   command_t cmd = doc["command"];
   uint64_t timestamp = doc["time"];
-  uint8_t home = doc["home"];
-  uint8_t away = doc["away"];
 
   switch (cmd) {
     case COMMAND_START_TIMER:
@@ -110,11 +90,14 @@ void handle_mqtt_message(char* topic, byte* message, unsigned int length) {
     case COMMAND_AWAY_SCORE:
     case COMMAND_HOME_ADJUST:
     case COMMAND_AWAY_ADJUST:
-      s->SetHomeScore(home);
-      s->SetAwayScore(away);
+      uint8_t val;
+      val = doc["home"];
+      s->SetHomeScore(val);
+      val = doc["away"];
+      s->SetAwayScore(val);
       break;
     default:
-      Serial.print("Unsupported command: ");
+      Serial.print("Unhandled command: ");
       Serial.println(cmd);
   }
 }
@@ -144,7 +127,6 @@ void loop() {
     reconnect_to_mqtt(&client);
   }
   client.loop();
-  // ensure_time();
 
   // Update the display
   update(t, s);

@@ -50,8 +50,6 @@ void reconnect_to_mqtt(PubSubClient* client) {
     // Attempt to connect
     if (client->connect(MQTT_CLIENT_NAME)) {
       Serial.println("connected");
-      // Subscribe
-      client->subscribe(MQTT_TOPIC);
     } else {
       Serial.print("failed, rc=");
       Serial.print(client->state());
@@ -84,7 +82,7 @@ void update(Timer* t, Score *s) {
 void publish_event(PubSubClient* client, uint64_t timestamp, command_t cmd, Score* s) {
   reconnect_to_mqtt(client);
 
-  StaticJsonDocument<256> doc;
+  JsonDocument doc;
   doc["command"] = cmd;
   doc["time"] = timestamp;
   doc["home"] = s->GetHomeScore();
@@ -94,15 +92,6 @@ void publish_event(PubSubClient* client, uint64_t timestamp, command_t cmd, Scor
   serializeJson(doc, jsonString);
 
   client->publish(MQTT_TOPIC, jsonString.c_str());
-}
-
-void ensure_time() {
-  struct tm time_info;
-  if (getLocalTime(&time_info)) return;
-  while (!getLocalTime(&time_info)) {
-    Serial.println("Waiting for time...");
-  }
-  Serial.println("Time received!");
 }
 
 void setup() {
@@ -131,7 +120,6 @@ void loop() {
     reconnect_to_mqtt(&client);
   }
   client.loop();
-  // ensure_time();
 
   // Process IR commands
   int16_t cmd;
