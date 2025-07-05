@@ -24,6 +24,15 @@ public:
         return scores[AWAY];
     }
 
+    // Setters
+    void SetHomeScore(uint8_t value) {
+        scores[HOME] = value;
+    }
+
+    void SetAwayScore(uint8_t value) {
+        scores[AWAY] = value;
+    }
+
     // Increment functions
     void HomeScore() {
         updateScore(HOME, 1);

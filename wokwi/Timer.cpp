@@ -1,10 +1,10 @@
 #include <Timer.h>
 
-Timer::Timer(uint32_t durationSeconds)
+Timer::Timer(uint64_t durationSeconds)
     : durationMs(durationSeconds * 1000), isRunning(false),
       accumulatedMs(0), totalElapsedMs(0), startTime(0) {}
 
-void Timer::Start(uint32_t currentTimeMs)
+void Timer::Start(uint64_t currentTimeMs)
 {
     if (!isRunning)
     {
@@ -13,22 +13,22 @@ void Timer::Start(uint32_t currentTimeMs)
     }
 }
 
-uint32_t Timer::Update(uint32_t currentTimeMs)
+uint64_t Timer::Update(uint64_t currentTimeMs)
 {
     if (isRunning)
     {
-        uint32_t sessionElapsed = currentTimeMs - startTime;
+        uint64_t sessionElapsed = currentTimeMs - startTime;
         totalElapsedMs = accumulatedMs + sessionElapsed;
     }
     int32_t remaining = durationMs - totalElapsedMs;
     return remaining > 0 ? remaining : 0;
 }
 
-void Timer::Stop(uint32_t currentTimeMs)
+void Timer::Stop(uint64_t currentTimeMs)
 {
     if (isRunning)
     {
-        uint32_t sessionElapsed = currentTimeMs - startTime;
+        uint64_t sessionElapsed = currentTimeMs - startTime;
         accumulatedMs += sessionElapsed;
         isRunning = false;
     }
@@ -44,7 +44,7 @@ bool Timer::IsFinished() const
     return totalElapsedMs >= durationMs;
 }
 
-String formatTime(uint32_t ms) {
+String formatTime(uint64_t ms) {
     if (ms >= 60000) {
         // Format as mm:ss
         uint16_t minutes = ms / 60000;
