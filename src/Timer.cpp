@@ -34,6 +34,11 @@ void Timer::Stop(uint64_t currentTimeMs)
     }
 }
 
+bool Timer::HasStarted() const
+{
+    return isRunning || accumulatedMs > 0;
+}
+
 bool Timer::IsRunning() const
 {
     return isRunning;

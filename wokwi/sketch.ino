@@ -66,13 +66,24 @@ uint64_t now() {
 }
 
 void update(Timer* t, Score *s) {
-  if (!ready) return;
-
   static String previous;
 
-  char buffer[15];
-  snprintf(buffer, sizeof(buffer), "[%s] %2d-%2d", formatTime(t->Update(now())), s->GetHomeScore(), s->GetAwayScore());
-  String current = String(buffer);
+  String current;
+  if (!ready) {
+    current = "Initialisation";
+  } else if(!t->HasStarted()) {
+    struct tm timeinfo;
+    if(getLocalTime(&timeinfo)) {
+      char buffer[15];
+      strftime(buffer, sizeof(buffer), "%H:%M:%S", &timeinfo);
+      current = String(buffer);
+    }
+  } else {
+    char buffer[15];
+    snprintf(buffer, sizeof(buffer), "[%s] %2d-%2d", formatTime(t->Update(now())), s->GetHomeScore(), s->GetAwayScore());
+    current = String(buffer);
+  }
+
   if (current != previous) {
     Serial.println(current);
     previous = current;

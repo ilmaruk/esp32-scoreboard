@@ -12,6 +12,7 @@ public:
     void Start(uint64_t currentTimeMs);
     uint64_t Update(uint64_t currentTimeMs);
     void Stop(uint64_t currentTimeMs);
+    bool HasStarted() const;
     bool IsRunning() const;
     bool IsFinished() const;
 
